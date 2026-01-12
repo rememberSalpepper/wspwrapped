@@ -115,8 +115,8 @@ export default function PaywallModal({ open, onClose, onUnlock, reportId }: Payw
           </div>
 
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-black">$9.99</span>
-            <span className="text-sm font-bold text-indigo-300">USD/mes</span>
+            <span className="text-4xl font-black">$10.000</span>
+            <span className="text-sm font-bold text-indigo-300">CLP/mes</span>
           </div>
 
           <ul className="space-y-3 text-sm font-bold text-indigo-100">

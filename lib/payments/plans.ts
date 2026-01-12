@@ -11,7 +11,7 @@ export const PLANS = {
   proMonth: {
     id: "pro-month" as PlanId,
     label: "Pro",
-    priceUsd: 10,
+    priceUsd: 10000, // Using this field for CLP now
     interval: "month",
     discount: 0
   },

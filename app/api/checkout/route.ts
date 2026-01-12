@@ -26,50 +26,36 @@ export async function POST(request: Request) {
             );
         }
 
-        // MercadoPago Preference for LATAM
-        const preference = {
-            items: [
-                {
-                    id: "wspwrapped-pro",
-                    title: "WspWrapped Pro - Análisis Completo",
-                    description: "Desbloquea todas las métricas y descarga tus imágenes sin marca de agua",
-                    quantity: 1,
-                    currency_id: "ARS", // Can be USD, BRL, CLP, etc.
-                    unit_price: 9990, // In cents for ARS (adjust per country)
-                },
-            ],
-            payer: {
-                email: email,
+        // MercadoPago Subscription (Preapproval)
+        // This creates an automatic recurring payment
+        const subscriptionPayload = {
+            reason: "WspWrapped Pro - Suscripción Mensual",
+            auto_recurring: {
+                frequency: 1,
+                frequency_type: "months",
+                transaction_amount: 10000,
+                currency_id: "CLP"
             },
-            back_urls: {
-                success: `${getBaseUrl(request)}/payment/success?userId=${userId}&reportId=${reportId || ""}`,
-                failure: `${getBaseUrl(request)}/payment/failure`,
-                pending: `${getBaseUrl(request)}/payment/pending`,
-            },
-            auto_return: "approved",
+            payer_email: email,
+            back_url: `${getBaseUrl(request)}/payment/success?userId=${userId}&reportId=${reportId || ""}`,
             external_reference: userId,
-            metadata: {
-                user_id: userId,
-                plan: "pro-month",
-                report_id: reportId,
-            },
-            notification_url: `${getBaseUrl(request)}/api/webhooks/mercadopago`,
+            status: "authorized", // Auto-active
         };
 
-        const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
+        const response = await fetch("https://api.mercadopago.com/preapproval", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${MERCADOPAGO_ACCESS_TOKEN}`,
             },
-            body: JSON.stringify(preference),
+            body: JSON.stringify(subscriptionPayload),
         });
 
         if (!response.ok) {
             const errorData = await response.json();
-            console.error("MercadoPago error:", errorData);
+            console.error("MercadoPago subscription error:", errorData);
             return NextResponse.json(
-                { error: "Error creating payment preference" },
+                { error: "Error creating subscription" },
                 { status: 500 }
             );
         }
@@ -77,43 +63,10 @@ export async function POST(request: Request) {
         const data = await response.json();
 
         return NextResponse.json({
-            checkoutUrl: data.init_point,
+            checkoutUrl: data.init_point, // URL where user approves the subscription
             preferenceId: data.id,
-            // For sandbox testing use: data.sandbox_init_point
         });
 
-        /* 
-        // ==========================================
-        // STRIPE IMPLEMENTATION (FUTURE - GLOBAL)
-        // ==========================================
-        // Uncomment when ready to use Stripe
-        
-        const stripe = new Stripe(STRIPE_SECRET_KEY);
-        
-        const session = await stripe.checkout.sessions.create({
-          payment_method_types: ["card"],
-          mode: "subscription",
-          line_items: [
-            {
-              price: process.env.STRIPE_PRICE_ID,
-              quantity: 1,
-            },
-          ],
-          customer_email: email,
-          client_reference_id: userId,
-          metadata: {
-            user_id: userId,
-            plan: "pro-month",
-          },
-          success_url: `${getBaseUrl(request)}/payment/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${getBaseUrl(request)}/payment/failure`,
-        });
-    
-        return NextResponse.json({
-          checkoutUrl: session.url,
-          sessionId: session.id,
-        });
-        */
     } catch (error) {
         console.error("Checkout error:", error);
         return NextResponse.json(
