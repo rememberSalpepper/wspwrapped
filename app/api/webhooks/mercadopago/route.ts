@@ -105,6 +105,41 @@ export async function POST(request: Request) {
     } catch (err) {
       console.error("Error processing payment webhook:", err);
     }
+  } else if (type === "subscription_preapproval") {
+    // Handle subscription status changes (e.g. authorized, paused, cancelled)
+    try {
+      const preapprovalId = data?.id;
+      if (!preapprovalId) return NextResponse.json({ received: true });
+
+      const preapprovalRes = await fetch(
+        `https://api.mercadopago.com/preapproval/${preapprovalId}`,
+        {
+          headers: { Authorization: `Bearer ${MERCADOPAGO_ACCESS_TOKEN}` }
+        }
+      );
+
+      if (preapprovalRes.ok) {
+        const preapproval = await preapprovalRes.json();
+        const userId = preapproval.external_reference;
+        const status = preapproval.status; // authorized, paused, cancelled
+
+        if (userId) {
+          // Map preapproval status to our internal status
+          let internalStatus: "active" | "canceled" | "pending" = "pending";
+          if (status === "authorized") internalStatus = "active";
+          if (status === "cancelled") internalStatus = "canceled";
+
+          await upsertSubscriptionStatus({
+            userId,
+            provider: "mercadopago",
+            status: internalStatus,
+            plan: "pro-month"
+          });
+        }
+      }
+    } catch (err) {
+      console.error("Error processing subscription webhook:", err);
+    }
   }
 
   return NextResponse.json({ received: true });
