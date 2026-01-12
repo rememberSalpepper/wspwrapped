@@ -55,11 +55,18 @@ export default function AuthModal({ open, onClose, onSuccess }: AuthModalProps) 
         const { error } = await authFn(email, password);
 
         if (error) {
-            setError(error.message);
+            // Improve error messages
+            if (error.message.includes("User already registered") || error.message.includes("already has been registered")) {
+                setError("Este correo ya está registrado. Por favor inicia sesión.");
+            } else if (error.message.includes("Invalid login credentials")) {
+                setError("Correo o contraseña incorrectos.");
+            } else {
+                setError(error.message);
+            }
             setLoading(false);
         } else {
             if (mode === "register") {
-                setSuccessMsg("¡Revisa tu email para confirmar tu cuenta!");
+                setSuccessMsg("¡Cuenta creada! Revisa tu email para confirmarla.");
                 setLoading(false);
             } else {
                 onSuccess();
