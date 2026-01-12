@@ -41,7 +41,9 @@ export async function POST(request: Request) {
             external_reference: userId,
         };
 
-        if (!MERCADOPAGO_ACCESS_TOKEN) {
+        const token = process.env.MERCADOPAGO_ACCESS_TOKEN;
+
+        if (!token) {
             console.error("Missing MERCADOPAGO_ACCESS_TOKEN");
             return NextResponse.json(
                 { error: "Server configuration error: Missing Payment Token" },
@@ -53,7 +55,7 @@ export async function POST(request: Request) {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
-                Authorization: `Bearer ${MERCADOPAGO_ACCESS_TOKEN}`,
+                Authorization: `Bearer ${token}`,
             },
             body: JSON.stringify(subscriptionPayload),
         });
