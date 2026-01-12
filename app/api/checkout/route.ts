@@ -39,7 +39,6 @@ export async function POST(request: Request) {
             payer_email: email,
             back_url: `${getBaseUrl(request)}/payment/success?userId=${userId}&reportId=${reportId || ""}`,
             external_reference: userId,
-            status: "authorized", // Auto-active
         };
 
         if (!MERCADOPAGO_ACCESS_TOKEN) {
