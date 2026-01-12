@@ -42,6 +42,14 @@ export async function POST(request: Request) {
             status: "authorized", // Auto-active
         };
 
+        if (!MERCADOPAGO_ACCESS_TOKEN) {
+            console.error("Missing MERCADOPAGO_ACCESS_TOKEN");
+            return NextResponse.json(
+                { error: "Server configuration error: Missing Payment Token" },
+                { status: 500 }
+            );
+        }
+
         const response = await fetch("https://api.mercadopago.com/preapproval", {
             method: "POST",
             headers: {
@@ -55,8 +63,8 @@ export async function POST(request: Request) {
             const errorData = await response.json();
             console.error("MercadoPago subscription error:", errorData);
             return NextResponse.json(
-                { error: "Error creating subscription" },
-                { status: 500 }
+                { error: "Error creating subscription", details: errorData },
+                { status: response.status }
             );
         }
 
