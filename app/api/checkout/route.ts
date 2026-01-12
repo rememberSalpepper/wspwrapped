@@ -26,19 +26,35 @@ export async function POST(request: Request) {
             );
         }
 
-        // MercadoPago Subscription (Preapproval)
-        // This creates an automatic recurring payment
-        const subscriptionPayload = {
-            reason: "WspWrapped Pro - Suscripción Mensual",
-            auto_recurring: {
-                frequency: 1,
-                frequency_type: "months",
-                transaction_amount: 10000,
-                currency_id: "CLP"
+        // MercadoPago Preference (Pago Único Simple)
+        // Esto es mucho más robusto para empezar
+        const preference = {
+            items: [
+                {
+                    id: "wspwrapped-pro",
+                    title: "WspWrapped Pro - Análisis Completo",
+                    description: "Desbloquea todas las métricas y descarga tus imágenes sin marca de agua",
+                    quantity: 1,
+                    currency_id: "CLP",
+                    unit_price: 10000,
+                },
+            ],
+            payer: {
+                email: email,
             },
-            payer_email: email,
-            back_url: `${getBaseUrl(request)}/payment/success?userId=${userId}&reportId=${reportId || ""}`,
+            back_urls: {
+                success: `${getBaseUrl(request)}/payment/success?userId=${userId}&reportId=${reportId || ""}`,
+                failure: `${getBaseUrl(request)}/payment/failure`,
+                pending: `${getBaseUrl(request)}/payment/pending`,
+            },
+            auto_return: "approved",
             external_reference: userId,
+            metadata: {
+                user_id: userId,
+                plan: "pro-month",
+                report_id: reportId,
+            },
+            notification_url: `${getBaseUrl(request)}/api/webhooks/mercadopago`,
         };
 
         if (!MERCADOPAGO_ACCESS_TOKEN) {
@@ -49,13 +65,13 @@ export async function POST(request: Request) {
             );
         }
 
-        const response = await fetch("https://api.mercadopago.com/preapproval", {
+        const response = await fetch("https://api.mercadopago.com/checkout/preferences", {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",
                 Authorization: `Bearer ${MERCADOPAGO_ACCESS_TOKEN}`,
             },
-            body: JSON.stringify(subscriptionPayload),
+            body: JSON.stringify(preference),
         });
 
         if (!response.ok) {
