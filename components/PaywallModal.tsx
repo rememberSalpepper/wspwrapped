@@ -60,7 +60,11 @@ export default function PaywallModal({ open, onClose, onUnlock, reportId }: Payw
       });
 
       if (!res.ok) {
-        throw new Error("Error al crear el checkout");
+        const errorData = await res.json().catch(() => ({}));
+        console.error("Checkout error details:", errorData);
+        // Try to show the most relevant error message
+        const msg = errorData.details?.message || errorData.error || "Error al crear el checkout";
+        throw new Error(msg);
       }
 
       const data = await res.json();
