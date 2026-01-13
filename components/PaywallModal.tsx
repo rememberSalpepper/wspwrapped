@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/auth/AuthContext";
 import AuthModal from "./AuthModal";
+import PayPalButton from "./PayPalButton";
 
 interface PaywallModalProps {
   open: boolean;
@@ -25,60 +26,27 @@ export default function PaywallModal({ open, onClose, onUnlock, reportId }: Payw
     return null;
   }
 
-  const handleUnlockClick = async () => {
+  const handleUnlockClick = () => {
     // Step 1: If not logged in, show auth modal
     if (!user) {
       setShowAuth(true);
       return;
     }
-
-    // Step 2: If logged in, redirect to checkout
-    await proceedToCheckout();
+    // When logged in, the PayPal button will handle the rest
   };
 
-  const handleAuthSuccess = async () => {
+  const handleAuthSuccess = () => {
     setShowAuth(false);
-    // After auth, proceed to checkout
-    await proceedToCheckout();
+    // After auth, user can click PayPal button
   };
 
-  const proceedToCheckout = async () => {
-    if (!user) return;
+  const handlePayPalSuccess = () => {
+    // Subscription created successfully
+    onUnlock();
+  };
 
-    setLoading(true);
-    setError(null);
-
-    try {
-      const res = await fetch("/api/checkout", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          userId: user.id,
-          email: user.email,
-          reportId: reportId,
-        }),
-      });
-
-      if (!res.ok) {
-        const errorData = await res.json().catch(() => ({}));
-        console.error("Checkout error details:", errorData);
-        // Try to show the most relevant error message
-        const msg = errorData.details?.message || errorData.error || "Error al crear el checkout";
-        throw new Error(msg);
-      }
-
-      const data = await res.json();
-
-      // Redirect to MercadoPago checkout
-      if (data.checkoutUrl) {
-        window.location.href = data.checkoutUrl;
-      } else {
-        throw new Error("No se obtuvo URL de checkout");
-      }
-    } catch (err: any) {
-      setError(err.message || "Error al procesar el pago");
-      setLoading(false);
-    }
+  const handlePayPalError = (errorMsg: string) => {
+    setError(errorMsg);
   };
 
   // Show AuthModal if user clicked unlock but isn't logged in
@@ -119,8 +87,8 @@ export default function PaywallModal({ open, onClose, onUnlock, reportId }: Payw
           </div>
 
           <div className="flex items-baseline gap-2">
-            <span className="text-4xl font-black">$10.000</span>
-            <span className="text-sm font-bold text-indigo-300">CLP/mes</span>
+            <span className="text-4xl font-black">$10</span>
+            <span className="text-sm font-bold text-indigo-300">USD/mes</span>
           </div>
 
           <ul className="space-y-3 text-sm font-bold text-indigo-100">
@@ -147,31 +115,29 @@ export default function PaywallModal({ open, onClose, onUnlock, reportId }: Payw
             </div>
           )}
 
-          <button
-            onClick={handleUnlockClick}
-            disabled={loading}
-            className="btn-spicy w-full py-5 text-sm hover:scale-105 transition-transform disabled:opacity-50"
-          >
-            {loading ? (
-              <span className="flex items-center justify-center gap-2">
-                <span className="animate-spin">⏳</span> Procesando...
-              </span>
-            ) : user ? (
-              "Ir a Pagar 💳"
-            ) : (
-              "Crear Cuenta y Pagar ✨"
-            )}
-          </button>
+          {!user ? (
+            <button
+              onClick={handleUnlockClick}
+              className="btn-spicy w-full py-5 text-sm hover:scale-105 transition-transform"
+            >
+              Crear Cuenta para Continuar ✨
+            </button>
+          ) : (
+            <PayPalButton
+              onSuccess={handlePayPalSuccess}
+              onError={handlePayPalError}
+            />
+          )}
 
           {user && (
-            <p className="text-center text-xs text-indigo-300">
+            <p className="text-center text-xs text-indigo-300 mt-2">
               Conectado como {user.email}
             </p>
           )}
         </div>
 
         <p className="text-center text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-6">
-          Pago seguro vía MercadoPago 🔒
+          Pago seguro vía PayPal 🔒
         </p>
 
         {/* Hidden region selector for future global implementation
