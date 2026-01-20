@@ -15,43 +15,98 @@ const body = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: "WspWrapped | Analiza tu WhatsApp con IA",
+    default: "WspWrapped - Analiza tus Chats de WhatsApp | Estadísticas y Métricas",
     template: "%s | WspWrapped"
   },
-  description: "Descubre la verdad de tus chats. Análisis detallado de dinámicas de pareja, tiempos de respuesta y más. 100% Privado y Seguro.",
-  keywords: ["whatsapp wrapped", "analisis whatsapp", "estadisticas chat", "amor", "pareja", "exportar chat whatsapp"],
-  authors: [{ name: "WspWrapped" }],
+  description: "Descubre las dinámicas ocultas de tus conversaciones de WhatsApp. Análisis completo de tiempos de respuesta, emojis, patrones y estadísticas. 100% privado, sin guardar mensajes. Exporta y comparte resultados en HD.",
+  keywords: [
+    // Primary keywords
+    "whatsapp wrapped",
+    "analisis whatsapp",
+    "estadisticas whatsapp",
+    "analizar chat whatsapp",
+
+    // Long-tail keywords
+    "como analizar conversaciones whatsapp",
+    "estadisticas chat pareja",
+    "tiempos de respuesta whatsapp",
+    "wrapped whatsapp 2024",
+    "whatsapp analytics",
+
+    // Spanish variations
+    "análisis de chat",
+    "métricas whatsapp",
+    "exportar chat whatsapp",
+    "dinámicas de pareja",
+
+    // Related
+    "spotify wrapped whatsapp",
+    "analizar mensajes",
+    "estadísticas conversación",
+    "privacidad whatsapp",
+  ],
+  authors: [{ name: "WspWrapped", url: "https://wspwrapped.online" }],
   creator: "WspWrapped",
+  publisher: "WspWrapped",
+  category: "Social Media Analytics",
   metadataBase: new URL("https://wspwrapped.online"),
+  alternates: {
+    canonical: "https://wspwrapped.online",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   openGraph: {
     type: "website",
     locale: "es_ES",
     url: "https://wspwrapped.online",
-    title: "WspWrapped | Tu Año en WhatsApp",
-    description: "¿Quién manda más mensajes? ¿Quién es más cursi? Descúbrelo ahora.",
+    title: "WspWrapped - Tu Año en WhatsApp | Análisis Completo de Conversaciones",
+    description: "¿Quién manda más mensajes? ¿Quién es más cursi? ¿Cuánto tardan en responder? Descubre las métricas ocultas de tus chats de WhatsApp. 100% privado y seguro.",
     siteName: "WspWrapped",
     images: [
       {
-        url: "/og-image.png", // We need to ensure this exists or use a placeholder
+        url: "/og-image.png",
         width: 1200,
         height: 630,
-        alt: "WspWrapped Preview",
+        alt: "WspWrapped - Analiza tus chats de WhatsApp",
+        type: "image/png",
       },
     ],
   },
   twitter: {
     card: "summary_large_image",
-    title: "WspWrapped | Analiza tu WhatsApp",
-    description: "Descubre las dinámicas ocultas de tus chats. Rápido, privado y divertido.",
+    site: "@wspwrapped",
+    creator: "@wspwrapped",
+    title: "WspWrapped - Analiza tus Chats de WhatsApp",
+    description: "Descubre las dinámicas ocultas de tus conversaciones. Tiempos de respuesta, emojis, estadísticas y más. Rápido, privado y divertido.",
     images: ["/og-image.png"],
   },
   manifest: "/manifest.webmanifest",
   icons: {
-    icon: "/favicon.ico",
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
     shortcut: "/favicon-16x16.png",
-    apple: "/apple-touch-icon.png",
+    apple: [
+      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
+    ],
   },
-};
+  verification: {
+    // google: "your-google-verification-code", // Add when you verify with Google Search Console
+    // yandex: "your-yandex-verification-code",
+    // bing: "your-bing-verification-code",
+  },
+}
 
 export default function RootLayout({
   children

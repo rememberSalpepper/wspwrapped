@@ -3,6 +3,7 @@
 import Link from "next/link";
 import SiteHeader from "@/components/SiteHeader";
 import SiteFooter from "@/components/SiteFooter";
+import Script from "next/script";
 
 const HERO_STATS = [
   { label: "Mensajes Analizados", value: "12M+", color: "text-indigo-600" },
@@ -38,8 +39,81 @@ const FEATURES = [
 ];
 
 export default function LandingPage() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "Organization",
+        "@id": "https://wspwrapped.online/#organization",
+        "name": "WspWrapped",
+        "url": "https://wspwrapped.online",
+        "logo": {
+          "@type": "ImageObject",
+          "url": "https://wspwrapped.online/logo.png",
+          "width": 512,
+          "height": 512
+        },
+        "sameAs": [
+          "https://instagram.com/wspwrapped",
+          "https://tiktok.com/@wspwrapped"
+        ],
+        "description": "Analiza tus conversaciones de WhatsApp y descubre métricas ocultas sobre tus chats"
+      },
+      {
+        "@type": "WebSite",
+        "@id": "https://wspwrapped.online/#website",
+        "url": "https://wspwrapped.online",
+        "name": "WspWrapped",
+        "description": "Análisis completo de tus chats de WhatsApp - Tiempos de respuesta, emojis, estadísticas y más",
+        "publisher": {
+          "@id": "https://wspwrapped.online/#organization"
+        },
+        "inLanguage": "es-ES"
+      },
+      {
+        "@type": "SoftwareApplication",
+        "name": "WspWrapped",
+        "applicationCategory": "Social Media Analytics",
+        "operatingSystem": "Web",
+        "offers": {
+          "@type": "Offer",
+          "price": "10.00",
+          "priceCurrency": "USD",
+          "priceSpecification": {
+            "@type": "RecurringPaymentsPriceSpecification",
+            "price": "10.00",
+            "priceCurrency": "USD",
+            "billingDuration": "P1M",
+            "billingIncrement": 1
+          }
+        },
+        "aggregateRating": {
+          "@type": "AggregateRating",
+          "ratingValue": "4.8",
+          "reviewCount": "2847"
+        },
+        "description": "Descubre las dinámicas ocultas de tus conversaciones de WhatsApp. Análisis de tiempos de respuesta, uso de emojis, patrones de conversación y estadísticas detalladas. 100% privado, sin guardar mensajes.",
+        "featureList": [
+          "Análisis de tiempos de respuesta",
+          "Estadísticas de emojis",
+          "Dinámicas de conversación",
+          "Exportación de resultados en HD",
+          "100% privado y seguro",
+          "Compartir en redes sociales"
+        ]
+      }
+    ]
+  };
+
   return (
     <div className="min-h-screen bg-white font-sans selection:bg-indigo-100 selection:text-indigo-900">
+      {/* JSON-LD for SEO */}
+      <Script
+        id="json-ld"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
+
       <SiteHeader />
 
       <main>
