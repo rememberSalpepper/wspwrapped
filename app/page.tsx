@@ -70,7 +70,7 @@ export default function LandingPage() {
             <div className="mt-12 flex flex-col items-center justify-center gap-6 sm:flex-row animate-reveal" style={{ animationDelay: "0.4s" }}>
               <Link
                 href="/upload"
-                className="btn-spicy group relative overflow-hidden px-10 py-5 text-sm hover:scale-105 transition-all"
+                className="btn-spicy group relative overflow-hidden px-8 md:px-10 py-4 md:py-5 text-sm hover:scale-105 transition-all w-full sm:w-auto text-center"
               >
                 <span className="relative z-10">Empezar Análisis ✨</span>
                 <div className="absolute inset-0 -z-10 animate-shimmer opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -107,6 +107,102 @@ export default function LandingPage() {
               {/* Floating Elements */}
               <div className="absolute -top-12 -left-12 h-24 w-24 animate-float-slow rounded-3xl bg-pink-500/10 blur-2xl" />
               <div className="absolute -bottom-12 -right-12 h-32 w-32 animate-float-slow rounded-full bg-indigo-500/10 blur-3xl" style={{ animationDelay: "-3s" }} />
+            </div>
+          </div>
+        </section>
+
+        {/* How It Works Section */}
+        <section className="px-6 py-24 bg-white relative overflow-hidden">
+          <div className="mx-auto max-w-6xl">
+            <div className="text-center space-y-4 mb-16 animate-reveal">
+              <div className="badge-premium bg-indigo-50 text-indigo-600 mx-auto">Fácil y Rápido ✨</div>
+              <h2 className="text-4xl font-black text-indigo-950 md:text-5xl tracking-tight">
+                ¿Cómo <span className="text-shimmer">Funciona?</span>
+              </h2>
+              <p className="text-slate-500 font-medium max-w-2xl mx-auto">
+                En solo 3 pasos simples puedes analizar tu chat y descubrir todas las métricas.
+              </p>
+            </div>
+
+            <div className="grid gap-8 md:grid-cols-3">
+              {/* Step 1 */}
+              <div className="glass-premium p-6 rounded-[2.5rem] space-y-6 hover-lift animate-reveal group" style={{ animationDelay: "0.1s" }}>
+                <div className="relative overflow-hidden rounded-2xl aspect-[4/3] bg-slate-50">
+                  <img
+                    src="/step1-export.png"
+                    alt="Exportar chat de WhatsApp"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-indigo-600 text-white text-xl font-black shadow-lg shadow-indigo-200">
+                    1
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-indigo-950">Exporta tu Chat</h3>
+                    <p className="text-sm font-medium text-slate-500">
+                      Desde WhatsApp: Opciones → Más → Exportar chat
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 2 */}
+              <div className="glass-premium p-6 rounded-[2.5rem] space-y-6 hover-lift animate-reveal group" style={{ animationDelay: "0.2s" }}>
+                <div className="relative overflow-hidden rounded-2xl aspect-[4/3] bg-slate-50">
+                  <img
+                    src="/step2-upload.png"
+                    alt="Subir archivo"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-pink-600 text-white text-xl font-black shadow-lg shadow-pink-200">
+                    2
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-indigo-950">Sube el Archivo</h3>
+                    <p className="text-sm font-medium text-slate-500">
+                      Arrastra tu archivo .txt o .zip a la plataforma
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Step 3 */}
+              <div className="glass-premium p-6 rounded-[2.5rem] space-y-6 hover-lift animate-reveal group" style={{ animationDelay: "0.3s" }}>
+                <div className="relative overflow-hidden rounded-2xl aspect-[4/3] bg-slate-50">
+                  <img
+                    src="/step3-results.png"
+                    alt="Ver resultados"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                </div>
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-r from-indigo-600 to-pink-600 text-white text-xl font-black shadow-lg shadow-indigo-200">
+                    3
+                  </div>
+                  <div>
+                    <h3 className="text-lg font-black text-indigo-950">Recibe tu Análisis</h3>
+                    <p className="text-sm font-medium text-slate-500">
+                      Métricas completas en segundos, 100% privado
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* CTA */}
+            <div className="mt-12 text-center">
+              <Link
+                href="/upload"
+                className="btn-spicy inline-flex items-center gap-2 px-8 py-4 text-sm hover:scale-105 transition-all"
+              >
+                <span>Empezar Ahora</span>
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
             </div>
           </div>
         </section>
@@ -234,7 +330,7 @@ export default function LandingPage() {
                     Ser Pro Ahora ✨
                   </Link>
                   <p className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">
-                    Pago único • Acceso de por vida
+                    Suscripción mensual • Cancela cuando quieras
                   </p>
                 </div>
               </div>

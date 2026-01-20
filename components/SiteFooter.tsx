@@ -15,10 +15,10 @@ export default function SiteFooter() {
               Revelando las dinámicas reales de tus conversaciones con elegancia y privacidad absoluta.
             </p>
             <div className="flex gap-4">
-              {["Twitter", "Instagram", "TikTok"].map((social) => (
-                <a key={social} href="#" className="text-xs font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors">
+              {["Instagram", "TikTok"].map((social) => (
+                <span key={social} className="text-xs font-bold uppercase tracking-widest text-slate-300 cursor-not-allowed">
                   {social}
-                </a>
+                </span>
               ))}
             </div>
           </div>
@@ -27,8 +27,8 @@ export default function SiteFooter() {
             <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-slate-400">Producto</h4>
             <ul className="space-y-4 text-sm font-bold text-indigo-950">
               <li><Link href="/upload" className="hover:text-pink-600 transition-colors">Analizar Chat</Link></li>
-              <li><Link href="#features" className="hover:text-pink-600 transition-colors">Características</Link></li>
-              <li><Link href="#precios" className="hover:text-pink-600 transition-colors">Precios Pro</Link></li>
+              <li><Link href="/#features" className="hover:text-pink-600 transition-colors">Características</Link></li>
+              <li><Link href="/#precios" className="hover:text-pink-600 transition-colors">Precios Pro</Link></li>
             </ul>
           </div>
 
@@ -37,7 +37,7 @@ export default function SiteFooter() {
             <ul className="space-y-4 text-sm font-bold text-indigo-950">
               <li><Link href="/privacy" className="hover:text-pink-600 transition-colors">Privacidad</Link></li>
               <li><Link href="/terms" className="hover:text-pink-600 transition-colors">Términos</Link></li>
-              <li><Link href="#" className="hover:text-pink-600 transition-colors">Cookies</Link></li>
+              <li><Link href="/cookies" className="hover:text-pink-600 transition-colors">Cookies</Link></li>
             </ul>
           </div>
         </div>
