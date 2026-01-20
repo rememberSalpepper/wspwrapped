@@ -91,16 +91,11 @@ export default function LandingPage() {
               <div className="glass-premium rounded-[3rem] p-4 md:p-8 animate-float-slow">
                 <div className="aspect-[16/9] overflow-hidden rounded-[2rem] bg-slate-50 shadow-inner relative group">
                   <div className="absolute inset-0 bg-gradient-to-tr from-indigo-500/10 to-pink-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-700" />
-                  <div className="flex h-full items-center justify-center">
-                    <div className="text-center space-y-4">
-                      <div className="badge-premium bg-white shadow-xl animate-pop">Preview HD ✨</div>
-                      <div className="flex gap-4">
-                        {[1, 2, 3].map((i) => (
-                          <div key={i} className="h-32 w-24 rounded-2xl bg-white shadow-lg animate-pulse-slow" style={{ animationDelay: `${i * 0.2}s` }} />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
+                  <img
+                    src="/hero-preview.png"
+                    alt="Dashboard Preview"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                  />
                 </div>
               </div>
 
@@ -275,10 +270,11 @@ export default function LandingPage() {
               <div className="flex-1 relative animate-float-slow">
                 <div className="relative z-10 rounded-[2.5rem] bg-white p-4 shadow-2xl shadow-indigo-200/50 rotate-3 transition-transform hover:rotate-0 duration-700">
                   <div className="aspect-[9/16] w-full max-w-[280px] rounded-[2rem] bg-slate-50 overflow-hidden relative">
-                    <div className="absolute inset-0 animate-shimmer opacity-20" />
-                    <div className="flex h-full items-center justify-center text-slate-300 font-black text-2xl text-center p-8">
-                      STORY PREVIEW ✨
-                    </div>
+                    <img
+                      src="/story-preview.png"
+                      alt="Story Preview"
+                      className="w-full h-full object-cover"
+                    />
                   </div>
                 </div>
                 {/* Decorative blobs */}
@@ -334,6 +330,111 @@ export default function LandingPage() {
                   </p>
                 </div>
               </div>
+            </div>
+          </div>
+        </section>
+
+        {/* FAQ Section */}
+        <section className="px-6 py-32 bg-white relative overflow-hidden">
+          <div className="mx-auto max-w-4xl">
+            <div className="text-center space-y-4 mb-16 animate-reveal">
+              <div className="badge-premium bg-indigo-50 text-indigo-600 mx-auto">Preguntas Frecuentes</div>
+              <h2 className="text-4xl font-black text-indigo-950 md:text-5xl tracking-tight">
+                ¿Tienes <span className="text-shimmer">Dudas?</span>
+              </h2>
+            </div>
+
+            <div className="space-y-4">
+              {/* FAQ 1 */}
+              <details className="glass-premium p-6 rounded-2xl group hover-lift cursor-pointer">
+                <summary className="flex items-center justify-between text-lg font-black text-indigo-950 list-none cursor-pointer">
+                  <span>¿Cómo funciona el análisis?</span>
+                  <svg className="h-5 w-5 text-indigo-600 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <p className="mt-4 text-sm font-medium text-slate-600 leading-relaxed">
+                  Exportas tu chat de WhatsApp (.txt o .zip), lo subes a nuestra plataforma, y en segundos obtienes un análisis completo con métricas sobre dinámicas de conversación, tiempos de respuesta, emojis más usados y mucho más. Todo procesado localmente sin guardar tus mensajes.
+                </p>
+              </details>
+
+              {/* FAQ 2 */}
+              <details className="glass-premium p-6 rounded-2xl group hover-lift cursor-pointer">
+                <summary className="flex items-center justify-between text-lg font-black text-indigo-950 list-none cursor-pointer">
+                  <span>¿Es seguro? ¿Guardan mis conversaciones?</span>
+                  <svg className="h-5 w-5 text-indigo-600 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <p className="mt-4 text-sm font-medium text-slate-600 leading-relaxed">
+                  <strong>100% privado y seguro.</strong> No guardamos el contenido de tus mensajes ni archivos. Todo se procesa en memoria y las métricas se generan al instante. Solo almacenamos agregados estadísticos (números, no texto). Tu privacidad es nuestra prioridad.
+                </p>
+              </details>
+
+              {/* FAQ 3 */}
+              <details className="glass-premium p-6 rounded-2xl group hover-lift cursor-pointer">
+                <summary className="flex items-center justify-between text-lg font-black text-indigo-950 list-none cursor-pointer">
+                  <span>¿Cuánto cuesta la versión Pro?</span>
+                  <svg className="h-5 w-5 text-indigo-600 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <p className="mt-4 text-sm font-medium text-slate-600 leading-relaxed">
+                  La suscripción Pro cuesta <strong>$10 USD mensuales</strong>. Puedes cancelar cuando quieras desde tu cuenta de PayPal. Con Pro obtienes acceso completo a todas las métricas, exportación en HD, y funciones exclusivas.
+                </p>
+              </details>
+
+              {/* FAQ 4 */}
+              <details className="glass-premium p-6 rounded-2xl group hover-lift cursor-pointer">
+                <summary className="flex items-center justify-between text-lg font-black text-indigo-950 list-none cursor-pointer">
+                  <span>¿Funciona con chats de grupo?</span>
+                  <svg className="h-5 w-5 text-indigo-600 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <p className="mt-4 text-sm font-medium text-slate-600 leading-relaxed">
+                  Sí, funciona con chats individuales y de grupo. El análisis se adapta automáticamente mostrando métricas relevantes para cada tipo de conversación.
+                </p>
+              </details>
+
+              {/* FAQ 5 */}
+              <details className="glass-premium p-6 rounded-2xl group hover-lift cursor-pointer">
+                <summary className="flex items-center justify-between text-lg font-black text-indigo-950 list-none cursor-pointer">
+                  <span>¿Cómo exporto mi chat de WhatsApp?</span>
+                  <svg className="h-5 w-5 text-indigo-600 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <p className="mt-4 text-sm font-medium text-slate-600 leading-relaxed">
+                  Abre el chat en WhatsApp → Toca los 3 puntos (⋮) → Más → Exportar chat. Puedes elegir "Sin archivos multimedia" para un archivo más ligero. Recibirás un archivo .txt o .zip que puedes subir aquí.
+                </p>
+              </details>
+
+              {/* FAQ 6 */}
+              <details className="glass-premium p-6 rounded-2xl group hover-lift cursor-pointer">
+                <summary className="flex items-center justify-between text-lg font-black text-indigo-950 list-none cursor-pointer">
+                  <span>¿Puedo compartir mis resultados?</span>
+                  <svg className="h-5 w-5 text-indigo-600 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </summary>
+                <p className="mt-4 text-sm font-medium text-slate-600 leading-relaxed">
+                  ¡Sí! Puedes exportar visualizaciones en HD perfectas para Stories de Instagram o compartir un link único de tu análisis. Todo diseñado para lucir increíble en redes sociales.
+                </p>
+              </details>
+            </div>
+
+            {/* CTA */}
+            <div className="mt-12 text-center">
+              <Link
+                href="/upload"
+                className="btn-spicy inline-flex items-center gap-2 px-8 py-4 text-sm hover:scale-105 transition-all"
+              >
+                <span>Probar Ahora Gratis</span>
+                <svg className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                </svg>
+              </Link>
             </div>
           </div>
         </section>
