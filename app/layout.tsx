@@ -52,13 +52,21 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://wspwrapped.online"),
   alternates: {
     canonical: "https://wspwrapped.online",
+    languages: {
+      'es': 'https://wspwrapped.online',
+      'pt': 'https://wspwrapped.online?lang=pt',
+      'en': 'https://wspwrapped.online?lang=en',
+      'x-default': 'https://wspwrapped.online',
+    },
   },
   robots: {
     index: true,
     follow: true,
+    nocache: false,
     googleBot: {
       index: true,
       follow: true,
+      noimageindex: false,
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
@@ -67,6 +75,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "es_ES",
+    alternateLocale: ["pt_BR", "en_US"],
     url: "https://wspwrapped.online",
     title: "WspWrapped - Tu Año en WhatsApp | Análisis Completo de Conversaciones",
     description: "¿Quién manda más mensajes? ¿Quién es más cursi? ¿Cuánto tardan en responder? Descubre las métricas ocultas de tus chats de WhatsApp. 100% privado y seguro.",
@@ -88,6 +97,15 @@ export const metadata: Metadata = {
     title: "WspWrapped - Analiza tus Chats de WhatsApp",
     description: "Descubre las dinámicas ocultas de tus conversaciones. Tiempos de respuesta, emojis, estadísticas y más. Rápido, privado y divertido.",
     images: ["/og-image.png"],
+  },
+  other: {
+    'application-name': 'WspWrapped',
+    'apple-mobile-web-app-capable': 'yes',
+    'apple-mobile-web-app-status-bar-style': 'default',
+    'apple-mobile-web-app-title': 'WspWrapped',
+    'format-detection': 'telephone=no',
+    'mobile-web-app-capable': 'yes',
+    'theme-color': '#4F46E5',
   },
   manifest: "/manifest.webmanifest",
   icons: {

@@ -71,7 +71,7 @@ export default function SiteHeader() {
 
           <Link
             href="/upload"
-            className="btn-glass text-[10px] px-6 py-3 hover-lift"
+            className="btn-glass text-[10px] px-4 md:px-6 py-2 md:py-3 hover-lift whitespace-nowrap"
           >
             Empezar ✨
           </Link>
