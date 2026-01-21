@@ -1,7 +1,10 @@
 import type { Badge, Metrics, ParsedMessage, TeaserMetrics } from "./types";
 
-const LOVE_REGEX = /\b(te amo|te quiero|te adoro|beso|besos|cariño|amor|mi vida|hermosa|hermoso|guapo|guapa|linda|lindo)\b/gi;
-const POSITIVE_WORDS = new Set(["bien", "bueno", "genial", "excelente", "feliz", "contento", "gracias", "si", "ok", "jaja", "haha", "amor", "lindo"]);
+// More precise love regex - require exact matches to avoid false positives
+const LOVE_REGEX = /\b(te amo|te quiero|te adoro)\b/gi;
+const AFFECTION_REGEX = /\b(beso|besos|cariño|amor|mi vida|hermosa|hermoso|guapo|guapa|linda|lindo|mi cielo|mi rey|mi reina)\b/gi;
+
+const POSITIVE_WORDS = new Set(["bien", "bueno", "genial", "excelente", "feliz", "contento", "gracias", "si", "ok", "jaja", "haha", "amor", "lindo", "perfecto", "increíble", "maravilloso"]);
 const NEGATIVE_WORDS = new Set(["mal", "malo", "triste", "no", "odio", "feo", "horrible", "terrible", "mierda", "puta", "estupido"]);
 
 const EMOJI_REGEX = /\p{Extended_Pictographic}/gu;
@@ -157,6 +160,7 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
   let currentMonologueCount = 0;
 
   let loveCount = 0;
+  let affectionCount = 0;
 
   for (const message of messages) {
     const sender = message.sender;
@@ -164,12 +168,26 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
     participants.add(sender);
     messagesByUser[sender] = (messagesByUser[sender] ?? 0) + 1;
 
-    // Sentiment Analysis (Phase 8)
+    // Improved Sentiment Analysis (Phase 8)
     const lowerText = text.toLowerCase();
     const wordsList = lowerText.split(/\s+/);
-    for (const w of wordsList) {
-      if (POSITIVE_WORDS.has(w)) sentimentScores[sender] = (sentimentScores[sender] ?? 0) + 1;
-      if (NEGATIVE_WORDS.has(w)) sentimentScores[sender] = (sentimentScores[sender] ?? 0) - 1;
+
+    // Context-aware sentiment: check for negations
+    for (let i = 0; i < wordsList.length; i++) {
+      const w = wordsList[i];
+      const prevWord = i > 0 ? wordsList[i - 1] : "";
+
+      // Check if previous word is a negation
+      const isNegated = prevWord === "no" || prevWord === "nunca" || prevWord === "ni";
+
+      if (POSITIVE_WORDS.has(w)) {
+        // If negated, it's actually negative
+        sentimentScores[sender] = (sentimentScores[sender] ?? 0) + (isNegated ? -1 : 1);
+      }
+      if (NEGATIVE_WORDS.has(w)) {
+        // If negated ("no mal" = "bien"), it's positive
+        sentimentScores[sender] = (sentimentScores[sender] ?? 0) + (isNegated ? 1 : -1);
+      }
     }
 
     // Daily Initiator
@@ -177,7 +195,7 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
       dailyFirstSender.set(message.dayKey, message);
     }
 
-    // Love Count & Timeline
+    // Love Count & Timeline (more precise)
     const matchLove = text.match(LOVE_REGEX);
     if (matchLove) {
       const count = matchLove.length;
@@ -188,6 +206,12 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
       const date = new Date(message.timestamp);
       const monthKey = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}`;
       loveTimelineMap[monthKey] = (loveTimelineMap[monthKey] ?? 0) + count;
+    }
+
+    // Affection words (separate from direct love)
+    const matchAffection = text.match(AFFECTION_REGEX);
+    if (matchAffection) {
+      affectionCount += matchAffection.length;
     }
 
     // Nicknames
@@ -467,8 +491,10 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
       .map(([phrase, count]) => ({ phrase, count }));
   }
 
-  // Response Times & Ghosting
+  // Response Times & Ghosting (Improved)
   const sortedMessages = [...messages].sort((a, b) => a.timestamp - b.timestamp);
+  // Tracking response times // Track all response times for better statistics
+
   for (let index = 1; index < sortedMessages.length; index += 1) {
     const prev = sortedMessages[index - 1];
     const current = sortedMessages[index];
@@ -492,8 +518,9 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
         longResponseCounts[current.sender] = (longResponseCounts[current.sender] ?? 0) + 1;
       }
 
-      // Filter out outliers > 24 hours to avoid skewing average
-      if (diffMinutes < 24 * 60) {
+      // Better filtering: exclude extreme outliers (>48h) AND very short (<10s)
+      // Only count reasonable conversation responses
+      if (diffMinutes > 0.16 && diffMinutes < 48 * 60) { // 10s to 48h
         const bucket = responseTotals[current.sender] ?? { totalMinutes: 0, count: 0 };
         bucket.totalMinutes += diffMinutes;
         bucket.count += 1;
@@ -631,19 +658,22 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
 
   metrics.badges = computeBadges(metrics);
 
+  // Validation: log warnings if metrics seem off
+  validateMetrics(metrics, messages.length);
+
   return metrics;
 }
-
-export function buildTeaser(metrics: Metrics): TeaserMetrics {
-  const topInitiator = Object.entries(metrics.dailyInitiators).reduce(
-    (best, entry) => (entry[1] > best[1] ? entry : best),
-    ["", 0] as [string, number]
-  );
-
-  return {
-    topInitiator: topInitiator[0]
-      ? { user: topInitiator[0], count: topInitiator[1] }
-      : null,
-    loveCount: metrics.loveCount
-  };
+  const totalMsgCount = Object.values(metrics.messagesByUser).reduce((sum, v) => sum + v, 0);
+  if (totalMsgCount !== totalMessages) {
+    console.warn(\`Message count mismatch: \${totalMsgCount} counted vs \${totalMessages} total\`);
+  }
+  
+  for (const [user, count] of Object.entries(metrics.messagesByUser)) {
+    if (count > totalMessages) {
+      console.error(\`User \${user} has more messages (\${count}) than total (\${totalMessages})\`);
+    }
+  }
+  
+  console.log(\`Validated \${metrics.totalMessages} messages from \${metrics.participants.length} participants\`);
+  console.log(\`Love count: \${metrics.loveCount}, Top emoji: \${metrics.emojiTop[0]?.emoji || 'none'}\`);
 }
