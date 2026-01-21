@@ -24,7 +24,7 @@ export const translations = {
         'how.title': '¿Cómo',
         'how.title.highlight': 'Funciona?',
         'how.subtitle': 'En solo 3 pasos simples puedes analizar tu chat y descubrir todas las métricas.',
-        'how.step1. title': 'Exporta tu Chat',
+        'how.step1.title': 'Exporta tu Chat',
         'how.step1.desc': 'Desde WhatsApp: Opciones → Más → Exportar chat',
         'how.step2.title': 'Sube el Archivo',
         'how.step2.desc': 'Arrastra tu archivo .txt o .zip a la plataforma',

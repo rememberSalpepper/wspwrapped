@@ -663,17 +663,48 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
 
   return metrics;
 }
+
+export function buildTeaser(metrics: Metrics): TeaserMetrics {
+  const topInitiator = Object.entries(metrics.dailyInitiators).reduce(
+    (best, entry) => (entry[1] > best[1] ? entry : best),
+    ["", 0] as [string, number]
+  );
+
+  return {
+    topInitiator: topInitiator[0]
+      ? { user: topInitiator[0], count: topInitiator[1] }
+      : null,
+    loveCount: metrics.loveCount
+  };
+}
+
+function validateMetrics(metrics: Metrics, totalMessages: number): void {
+  console.log("[Metrics Validation]");
+  
+  if (metrics.totalMessages === 0) {
+    console.warn("No messages parsed! Check export format.");
+  }
+  
+  if (metrics.participants.length === 0) {
+    console.warn("No participants found!");
+  }
+  
+  if (metrics.participants.length > 10) {
+    console.warn(metrics.participants.length + " participants detected - might be a group chat");
+  }
+  
   const totalMsgCount = Object.values(metrics.messagesByUser).reduce((sum, v) => sum + v, 0);
   if (totalMsgCount !== totalMessages) {
-    console.warn(\`Message count mismatch: \${totalMsgCount} counted vs \${totalMessages} total\`);
+    console.warn("Message count mismatch: " + totalMsgCount + " counted vs " + totalMessages + " total");
   }
   
   for (const [user, count] of Object.entries(metrics.messagesByUser)) {
     if (count > totalMessages) {
-      console.error(\`User \${user} has more messages (\${count}) than total (\${totalMessages})\`);
+      console.error("User " + user + " has more messages (" + count + ") than total (" + totalMessages + ")");
     }
   }
   
-  console.log(\`Validated \${metrics.totalMessages} messages from \${metrics.participants.length} participants\`);
-  console.log(\`Love count: \${metrics.loveCount}, Top emoji: \${metrics.emojiTop[0]?.emoji || 'none'}\`);
+  console.log("Validated " + metrics.totalMessages + " messages from " + metrics.participants.length + " participants");
+  console.log("Love count: " + metrics.loveCount + ", Top emoji: " + (metrics.emojiTop[0]?.emoji || 'none'));
 }
+
