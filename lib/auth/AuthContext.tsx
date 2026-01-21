@@ -21,8 +21,7 @@ interface AuthContextType {
     subscriptionStatus: SubscriptionStatus;
     isPro: boolean;
     signInWithEmail: (email: string, password: string) => Promise<{ error: Error | null }>;
-    signUpWithEmail: (email: string, password: string) => Promise<{ error: Error | null }>;
-    signInWithGoogle: () => Promise<{ error: Error | null }>;
+    signUpWithEmail: (email: string, password: string) => Promise<{ error: Error | null; data: any }>;
     signOut: () => Promise<void>;
     refreshSubscription: () => Promise<void>;
     resetPassword: (email: string) => Promise<{ error: Error | null }>;
@@ -98,26 +97,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     };
 
     const signUpWithEmail = async (email: string, password: string) => {
-        if (!supabase) return { error: new Error("Auth not available") };
-        const { error } = await supabase.auth.signUp({
+        if (!supabase) return { error: new Error("Auth not available"), data: null };
+        const { error, data } = await supabase.auth.signUp({
             email,
             password,
             options: {
                 emailRedirectTo: `${window.location.origin}/auth/callback`
             }
         });
-        return { error: error as Error | null };
-    };
-
-    const signInWithGoogle = async () => {
-        if (!supabase) return { error: new Error("Auth not available") };
-        const { error } = await supabase.auth.signInWithOAuth({
-            provider: "google",
-            options: {
-                redirectTo: `${window.location.origin}/auth/callback`
-            }
-        });
-        return { error: error as Error | null };
+        return { error: error as Error | null, data };
     };
 
     const signOut = async () => {
@@ -144,7 +132,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
                 isPro,
                 signInWithEmail,
                 signUpWithEmail,
-                signInWithGoogle,
                 signOut,
                 refreshSubscription,
                 resetPassword,
