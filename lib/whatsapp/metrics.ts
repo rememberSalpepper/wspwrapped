@@ -1,8 +1,8 @@
 import type { Badge, Metrics, ParsedMessage, TeaserMetrics } from "./types";
 
 // More precise love regex - require exact matches to avoid false positives
-const LOVE_REGEX = /\b(te amo|te quiero|te adoro)\b/gi;
-const AFFECTION_REGEX = /\b(beso|besos|cariño|amor|mi vida|hermosa|hermoso|guapo|guapa|linda|lindo|mi cielo|mi rey|mi reina)\b/gi;
+const LOVE_REGEX = /\b(te amo+|te quiero+|te adoro+|tqm|tkm|ly|love u|love|ily|te amooo+)\b/gi;
+const AFFECTION_REGEX = /\b(beso|besos|cariño|amor|mi vida|hermosa|hermoso|guapo|guapa|linda|lindo|mi cielo|mi rey|mi reina|corazon|bebe)\b/gi;
 
 const POSITIVE_WORDS = new Set(["bien", "bueno", "genial", "excelente", "feliz", "contento", "gracias", "si", "ok", "jaja", "haha", "amor", "lindo", "perfecto", "increíble", "maravilloso"]);
 const NEGATIVE_WORDS = new Set(["mal", "malo", "triste", "no", "odio", "feo", "horrible", "terrible", "mierda", "puta", "estupido"]);
@@ -71,8 +71,8 @@ function computeBadges(metrics: Metrics): Badge[] {
   return badges;
 }
 
-const GM_REGEX = /\b(buenos dias|buen dia|bd|buenos días|buen día)\b/i;
-const NICKNAMES_LIST = ["amor", "bebe", "bebé", "vida", "cielo", "gordi", "gordo", "gorda", "chanchi", "rey", "reina", "linda", "lindo"];
+const GM_REGEX = /\b(buenos dias|buen dia|bd|buenos días|buen día|wenas|holis|alo|hello|hi|gud mornin|buenos)\b/i;
+const NICKNAMES_LIST = ["amor", "bebe", "bebé", "vida", "cielo", "gordi", "gordo", "gorda", "chanchi", "rey", "reina", "linda", "lindo", "corazon", "bombom", "bombon", "cariño", "baby", "bby"];
 
 const AUDIO_REGEX = /(audio|PTT) (omitted|omitido)/i;
 const YOYO_REGEX = /\b(yo|mi|me|mío)\b/gi;

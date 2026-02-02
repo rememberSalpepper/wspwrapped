@@ -16,7 +16,7 @@ export default function Timeline({ data, title = "Timeline de Actividad 📈" }:
 
   // Generate points for the area chart
   const points = data.map((d, i) => {
-    const x = (i / (data.length - 1)) * width;
+    const x = data.length > 1 ? (i / (data.length - 1)) * width : width / 2; // Center if single point
     const y = height - (d.count / maxCount) * height;
     return `${x},${y}`;
   }).join(" ");
