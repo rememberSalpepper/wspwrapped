@@ -569,7 +569,7 @@ export default function UploadClient({ initialMetrics, initialReportId }: { init
                                 <p className="text-[10px] font-black uppercase tracking-widest text-pink-400">Timeline del Amor 📈</p>
                                 {metrics.loveTimeline.length > 0 ? (
                                     <div className="flex items-end gap-1 h-32">
-                                        {metrics.loveTimeline.slice(-12).map((item) => (
+                                        {metrics.loveTimeline.slice(-24).map((item) => (
                                             <div key={item.date} className="flex-1 flex flex-col items-center gap-1 group">
                                                 <div className="w-full bg-pink-400 rounded-t-md relative group-hover:bg-pink-600 transition-colors min-h-[4px]" style={{ height: `${Math.max((item.count / (Math.max(...metrics.loveTimeline.map(t => t.count)) || 1)) * 100, 5)}%` }}>
                                                     <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-800 text-white text-[10px] px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap z-10">
@@ -584,7 +584,7 @@ export default function UploadClient({ initialMetrics, initialReportId }: { init
                                         No hay suficientes datos de amor... 💔
                                     </div>
                                 )}
-                                <p className="text-center text-xs text-slate-400 font-bold">Últimos 12 meses</p>
+                                <p className="text-center text-xs text-slate-400 font-bold">Últimos 24 meses</p>
                             </div>
                         </div>
                     </BlurOverlay>
@@ -737,7 +737,7 @@ export default function UploadClient({ initialMetrics, initialReportId }: { init
                                 </div>
                             )}
                             <div className={locked ? "blur-xl select-none" : ""}>
-                                <Timeline data={metrics.timeline} />
+                                <Timeline data={metrics.timeline} title="Flujo de Interacción 📈" />
                             </div>
                         </div>
 

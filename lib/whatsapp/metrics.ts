@@ -334,15 +334,25 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
     }
 
     // Monologue & Double Texting
-    if (sender === currentMonologueUser) {
-      currentMonologueCount++;
-      doubleTextCounts[sender] = (doubleTextCounts[sender] ?? 0) + 1;
-    } else {
-      if (currentMonologueUser) {
-        maxMonologue[currentMonologueUser] = Math.max(maxMonologue[currentMonologueUser] ?? 0, currentMonologueCount);
+    // Exclude media messages from monologue streak (images, videos, stickers)
+    const isMedia =
+      IMAGE_REGEX.test(text) ||
+      GIF_REGEX.test(text) ||
+      STICKER_REGEX.test(text) ||
+      text.includes("<media omitted>") ||
+      text.includes("media omitted");
+
+    if (!isMedia) {
+      if (sender === currentMonologueUser) {
+        currentMonologueCount++;
+        doubleTextCounts[sender] = (doubleTextCounts[sender] ?? 0) + 1;
+      } else {
+        if (currentMonologueUser) {
+          maxMonologue[currentMonologueUser] = Math.max(maxMonologue[currentMonologueUser] ?? 0, currentMonologueCount);
+        }
+        currentMonologueUser = sender;
+        currentMonologueCount = 1;
       }
-      currentMonologueUser = sender;
-      currentMonologueCount = 1;
     }
 
     // --- VIRAL METRICS ---
@@ -489,6 +499,10 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
       .sort((a, b) => b[1] - a[1])
       .slice(0, 5)
       .map(([phrase, count]) => ({ phrase, count }));
+
+    // Fix Toxic-O-Meter: Add bad words count to toxic count
+    const badWordsTotal = Object.values(badWordCounts[user] || {}).reduce((sum, v) => sum + v, 0);
+    toxicCounts[user] = (toxicCounts[user] ?? 0) + badWordsTotal;
   }
 
   // Response Times & Ghosting (Improved)
@@ -556,10 +570,39 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
     goodMorningStreak[user] = maxStreak;
   }
 
-  // Love Timeline Array
-  const loveTimeline = Object.entries(loveTimelineMap)
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([date, count]) => ({ date, count }));
+  // Love Timeline Array (Filled)
+  const loveTimelineRaw = Object.entries(loveTimelineMap)
+    .sort((a, b) => a[0].localeCompare(b[0]));
+
+  const loveTimeline: { date: string; count: number }[] = [];
+
+  if (loveTimelineRaw.length > 0) {
+    // Fill gaps for monthly timeline
+    const startStr = loveTimelineRaw[0][0]; // YYYY-MM
+    const endStr = loveTimelineRaw[loveTimelineRaw.length - 1][0];
+
+    // Use safely constructed dates (1st of month)
+    const [startYear, startMonth] = startStr.split('-').map(Number);
+    const [endYear, endMonth] = endStr.split('-').map(Number);
+
+    let currentYear = startYear;
+    let currentMonth = startMonth;
+
+    const dataMap = new Map(loveTimelineRaw);
+
+    while (currentYear < endYear || (currentYear === endYear && currentMonth <= endMonth)) {
+      const key = `${currentYear}-${String(currentMonth).padStart(2, '0')}`;
+      loveTimeline.push({ date: key, count: dataMap.get(key) || 0 });
+
+      currentMonth++;
+      if (currentMonth > 12) {
+        currentMonth = 1;
+        currentYear++;
+      }
+    }
+  } else {
+    // Empty case
+  }
 
   for (const message of dailyFirstSender.values()) {
     dailyInitiators[message.sender] = (dailyInitiators[message.sender] ?? 0) + 1;
@@ -577,9 +620,33 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
     }))
     .sort((a, b) => a.avgMinutes - b.avgMinutes);
 
-  const timeline = Object.entries(timelineCounts)
-    .sort((a, b) => a[0].localeCompare(b[0]))
-    .map(([date, count]) => ({ date, count }));
+  const timelineRaw = Object.entries(timelineCounts)
+    .sort((a, b) => a[0].localeCompare(b[0]));
+
+  const timeline: { date: string; count: number }[] = [];
+
+  if (timelineRaw.length > 0) {
+    const startStr = timelineRaw[0][0];
+    const endStr = timelineRaw[timelineRaw.length - 1][0];
+
+    const startDate = new Date(startStr);
+    const endDate = new Date(endStr);
+
+    // Validate dates
+    if (!isNaN(startDate.getTime()) && !isNaN(endDate.getTime())) {
+      const dataMap = new Map(timelineRaw);
+      const curr = new Date(startDate);
+
+      while (curr <= endDate) {
+        const key = `${curr.getFullYear()}-${String(curr.getMonth() + 1).padStart(2, '0')}-${String(curr.getDate()).padStart(2, '0')}`;
+        timeline.push({ date: key, count: dataMap.get(key) || 0 });
+        curr.setDate(curr.getDate() + 1);
+      }
+    } else {
+      // Fallback if dates are invalid
+      timeline.push(...timelineRaw.map(([date, count]) => ({ date, count })));
+    }
+  }
 
   // Prime Time Calculation
   let maxHour = 0;
@@ -680,30 +747,30 @@ export function buildTeaser(metrics: Metrics): TeaserMetrics {
 
 function validateMetrics(metrics: Metrics, totalMessages: number): void {
   console.log("[Metrics Validation]");
-  
+
   if (metrics.totalMessages === 0) {
     console.warn("No messages parsed! Check export format.");
   }
-  
+
   if (metrics.participants.length === 0) {
     console.warn("No participants found!");
   }
-  
+
   if (metrics.participants.length > 10) {
     console.warn(metrics.participants.length + " participants detected - might be a group chat");
   }
-  
+
   const totalMsgCount = Object.values(metrics.messagesByUser).reduce((sum, v) => sum + v, 0);
   if (totalMsgCount !== totalMessages) {
     console.warn("Message count mismatch: " + totalMsgCount + " counted vs " + totalMessages + " total");
   }
-  
+
   for (const [user, count] of Object.entries(metrics.messagesByUser)) {
     if (count > totalMessages) {
       console.error("User " + user + " has more messages (" + count + ") than total (" + totalMessages + ")");
     }
   }
-  
+
   console.log("Validated " + metrics.totalMessages + " messages from " + metrics.participants.length + " participants");
   console.log("Love count: " + metrics.loveCount + ", Top emoji: " + (metrics.emojiTop[0]?.emoji || 'none'));
 }

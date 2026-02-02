@@ -1,6 +1,6 @@
 import type { Metrics } from "@/lib/whatsapp/types";
 
-export default function Timeline({ data }: { data: Metrics["timeline"] }) {
+export default function Timeline({ data, title = "Timeline de Actividad 📈" }: { data: Metrics["timeline"], title?: string }) {
   if (!data || data.length === 0) {
     return (
       <div className="rounded-[2rem] border border-pink-100 bg-white/60 p-6 shadow-sm hover-lift flex items-center justify-center h-48">
@@ -27,7 +27,7 @@ export default function Timeline({ data }: { data: Metrics["timeline"] }) {
   return (
     <div className="rounded-[2rem] border border-pink-100 bg-white/60 p-6 shadow-sm hover-lift">
       <div className="flex justify-between items-center mb-4">
-        <div className="text-[10px] font-black uppercase tracking-widest text-pink-400">Timeline del Amor 💖</div>
+        <div className="text-[10px] font-black uppercase tracking-widest text-pink-400">{title}</div>
         <div className="text-[10px] font-bold text-pink-300 bg-pink-50 px-2 py-1 rounded-full">
           {data.length} días
         </div>
