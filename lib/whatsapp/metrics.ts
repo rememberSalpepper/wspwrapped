@@ -73,6 +73,7 @@ function computeBadges(metrics: Metrics): Badge[] {
 
 const GM_REGEX = /\b(buenos dias|buen dia|bd|buenos días|buen día|wenas|holis|alo|hello|hi|gud mornin|buenos)\b/i;
 const NICKNAMES_LIST = ["amor", "bebe", "bebé", "vida", "cielo", "gordi", "gordo", "gorda", "chanchi", "rey", "reina", "linda", "lindo", "corazon", "bombom", "bombon", "cariño", "baby", "bby"];
+const NICKNAMES_REGEX = new RegExp(`\\b(${NICKNAMES_LIST.join("|")})\\b`, "gi");
 
 const AUDIO_REGEX = /(audio|PTT) (omitted|omitido)/i;
 const YOYO_REGEX = /\b(yo|mi|me|mío)\b/gi;
@@ -88,6 +89,7 @@ const BAD_WORDS_LIST = [
   // Chilean Slang
   "wea", "weon", "wn", "ctm", "conchetumare", "culiao", "ql", "pico", "chucha", "aweonao"
 ];
+const BAD_WORDS_REGEX = new RegExp(`\\b(${BAD_WORDS_LIST.join("|")})\\b`, "gi");
 const POLITENESS_REGEX = /\b(gracias|por favor|agradecido|agradecida|plis)\b/i;
 const STOP_WORDS = new Set(["de", "la", "que", "el", "en", "y", "a", "los", "se", "del", "las", "un", "por", "con", "no", "una", "su", "para", "es", "al", "lo", "como", "mas", "pero", "sus", "le", "ya", "o", "fue", "este", "ha", "si", "porque", "esta", "son", "entre", "cuando", "muy", "sin", "sobre", "ser", "tiene", "tambien", "me", "hasta", "hay", "donde", "quien", "desde", "todo", "nos", "durante", "todos", "uno", "les", "ni", "contra", "otros", "ese", "eso", "ante", "ellos", "e", "esto", "mi", "antes", "algunos", "que", "unos", "yo", "otro", "otras", "otra", "el", "ella", "te", "ti", "tu", "pm", "am", "omitted", "audio", "image", "video", "sticker", "null", "undefined"]);
 
@@ -215,11 +217,12 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
     }
 
     // Nicknames
-    // const lowerText = text.toLowerCase(); // Already defined above
-    for (const nick of NICKNAMES_LIST) {
-      if (lowerText.includes(nick)) {
-        if (!userNicknames[sender]) userNicknames[sender] = {};
-        userNicknames[sender][nick] = (userNicknames[sender][nick] ?? 0) + 1;
+    const nickMatches = text.match(NICKNAMES_REGEX);
+    if (nickMatches) {
+      if (!userNicknames[sender]) userNicknames[sender] = {};
+      for (const nick of nickMatches) {
+        const lowerNick = nick.toLowerCase();
+        userNicknames[sender][lowerNick] = (userNicknames[sender][lowerNick] ?? 0) + 1;
       }
     }
 
@@ -404,10 +407,12 @@ export function computeMetrics(messages: ParsedMessage[]): Metrics {
     }
 
     // Bad Words
-    for (const bad of BAD_WORDS_LIST) {
-      if (lowerText.includes(bad)) {
-        if (!badWordCounts[sender]) badWordCounts[sender] = {};
-        badWordCounts[sender][bad] = (badWordCounts[sender][bad] ?? 0) + 1;
+    const badMatches = text.match(BAD_WORDS_REGEX);
+    if (badMatches) {
+      if (!badWordCounts[sender]) badWordCounts[sender] = {};
+      for (const bad of badMatches) {
+        const lowerBad = bad.toLowerCase();
+        badWordCounts[sender][lowerBad] = (badWordCounts[sender][lowerBad] ?? 0) + 1;
       }
     }
 
